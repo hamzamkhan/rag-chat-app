@@ -8,13 +8,13 @@ import com.app.ragchatapp.chat_session.service.ChatSessionService;
 import com.app.ragchatapp.exception.CustomApiException;
 import com.app.ragchatapp.exception.NotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatSessionServiceImpl implements ChatSessionService {
 
     private final ChatSessionRepository chatSessionRepository;

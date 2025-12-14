@@ -70,7 +70,7 @@ public class RateLimiterConfig implements Filter {
 
         Bucket bucket = resolveBucket(clientKey);
 
-        if (bucket.tryConsu\me(1)) {
+        if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
         } else {
             res.setStatus(429);

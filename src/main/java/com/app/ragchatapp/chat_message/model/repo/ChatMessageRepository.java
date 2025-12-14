@@ -5,7 +5,9 @@ import com.app.ragchatapp.chat_session.model.entity.ChatSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    Page<ChatMessage> findBySessionOrderByCreatedAtAsc(ChatSession session, Pageable pageable);
+    Page<ChatMessage> findByChatSessionOrderByCreatedAtAsc(ChatSession session, Pageable pageable);
 }

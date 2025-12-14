@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ragchat
+      POSTGRES_USER: ragchat
+      POSTGRES_PASSWORD: ragchat
+    ports:
+      - "5432:5432"
+    volumes:
+      - ragchat-db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ragchat-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  app:
+    build: .
+    container_name: ragchat-app
+    restart: unless-stopped
+    env_file:
+      - .env.example
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  ragchat-db-data:

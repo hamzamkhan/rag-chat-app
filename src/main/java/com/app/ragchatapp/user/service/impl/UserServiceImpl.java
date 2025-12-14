@@ -7,10 +7,12 @@ import com.app.ragchatapp.user.model.entity.User;
 import com.app.ragchatapp.user.model.repo.UserRepository;
 import com.app.ragchatapp.user.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

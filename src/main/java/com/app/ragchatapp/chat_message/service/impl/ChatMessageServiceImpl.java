@@ -10,7 +10,7 @@ import com.app.ragchatapp.chat_message.service.ChatMessageService;
 import com.app.ragchatapp.chat_session.model.entity.ChatSession;
 import com.app.ragchatapp.chat_session.service.ChatSessionService;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatMessageServiceImpl implements ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatSessionService chatSessionService;
@@ -62,7 +62,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public Page<ChatMessageResponseDTO> getMessages(UUID sessionId, Pageable pageable) {
         ChatSession session = chatSessionService.getEntity(String.valueOf(sessionId));
-        return chatMessageRepository.findBySessionOrderByCreatedAtAsc(session, pageable)
+        return chatMessageRepository.findByChatSessionOrderByCreatedAtAsc(session, pageable)
                 .map(this::toResponse);
     }
 

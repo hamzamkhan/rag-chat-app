@@ -6,6 +6,7 @@ import com.app.ragchatapp.chat_session.service.ChatSessionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/session")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Tag(name = "Chat Sessions")
 public class ChatSessionController {
 
