@@ -3,6 +3,7 @@ package com.app.ragchatapp.chat_message.controller;
 import com.app.ragchatapp.chat_message.model.dto.request.CreateChatMessageRequestDTO;
 import com.app.ragchatapp.chat_message.model.dto.response.ChatMessageResponseDTO;
 import com.app.ragchatapp.chat_message.service.ChatMessageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/v1/message")
+@Tag(name = "Chat Messages")
 public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
