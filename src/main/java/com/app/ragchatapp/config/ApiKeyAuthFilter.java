@@ -31,11 +31,18 @@ public class ApiKeyAuthFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         String path = http.getRequestURI();
-        if (path.startsWith("/actuator/health") || path.startsWith("/v3/api-docs") ||
-                path.startsWith("/swagger-ui")) {
+        boolean isSwagger =
+                path.contains("/swagger-ui")
+                        || path.contains("/v3/api-docs")
+                        || path.contains("/swagger-resources")
+                        || path.contains("/webjars")
+                        || path.contains("/actuator");
+
+        if (isSwagger) {
             chain.doFilter(request, response);
             return;
         }
+
 
         String apiKey = http.getHeader(HEADER_NAME);
         if (apiKey == null || !apiKey.equals(apiKeyConfig.getExpectedApiKey())) {

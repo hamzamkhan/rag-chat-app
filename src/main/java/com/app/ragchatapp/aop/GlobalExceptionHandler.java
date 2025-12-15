@@ -5,11 +5,13 @@ import com.app.ragchatapp.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice(assignableTypes = {
+        com.app.ragchatapp.chat_message.controller.ChatMessageController.class,
+        com.app.ragchatapp.chat_session.controller.ChatSessionController.class
+})
 public class GlobalExceptionHandler {
     @ExceptionHandler(CustomApiException.class)
     public ResponseEntity<ErrorResponse> handleCustomApiException(CustomApiException ex, HttpServletRequest request) {
