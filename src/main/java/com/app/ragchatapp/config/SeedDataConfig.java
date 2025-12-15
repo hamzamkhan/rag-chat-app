@@ -7,50 +7,50 @@ import com.app.ragchatapp.chat_message.model.entity.ChatMessageContext;
 import com.app.ragchatapp.chat_message.model.repo.ChatMessageRepository;
 import com.app.ragchatapp.chat_session.model.entity.ChatSession;
 import com.app.ragchatapp.chat_session.model.repo.ChatSessionRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.UUID;
 
-@Configuration
-public class SeedDataConfig {
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class SeedDataConfig implements CommandLineRunner{
 
-    @Bean
-    public CommandLineRunner seedDemoData(ChatSessionRepository sessionRepo,
-                                          ChatMessageRepository messageRepo) {
-        return args -> {
-            // Only seed if DB is empty
-            if (sessionRepo.count() > 0) {
-                return;
-            }
+    private final ChatSessionRepository sessionRepo;
+    private final ChatMessageRepository messageRepo;
 
-            // 1) Create a demo session
+    @Override
+    @Transactional
+    public void run(String... args) {
+        try {
+            // demo-only: wipe and reinsert each startup
+            messageRepo.deleteAll();
+            sessionRepo.deleteAll();
+
             ChatSession session = new ChatSession();
-            session.setUserId(UUID.fromString("2ee1d1c8-7179-47bc-b5dd-db98cd3b1e8e"));
+            session.setUserId(UUID.fromString("a84101b1-0ddc-4bdd-bb60-fc9fd457c4aa"));
             session.setTitle("Demo RAG Chat");
             session.setFavorite(true);
-            session.setCreatedAt(Instant.now());
-            session.setUpdatedAt(Instant.now());
 
-            ChatSession savedSession = sessionRepo.save(session);
+            session = sessionRepo.save(session);
+            log.info("✅ DataInitializer: created session {}", session.getId());
 
-            // 2) Create a user question
             ChatMessage userMsg = new ChatMessage();
-            userMsg.setChatSession(savedSession);
+            userMsg.setChatSession(session);
             userMsg.setOriginType(OriginType.USER);
             userMsg.setMessage("What is the UAE corporate tax rate?");
-            // createdAt will be set by @PrePersist
-            ChatMessage savedUserMsg = messageRepo.save(userMsg);
+            userMsg = messageRepo.save(userMsg);
+            log.info("✅ DataInitializer: created user msg {}", userMsg.getId());
 
-            // 3) Create an assistant answer with RAG context
             ChatMessage assistantMsg = new ChatMessage();
-            assistantMsg.setChatSession(savedSession);
+            assistantMsg.setChatSession(session);
             assistantMsg.setOriginType(OriginType.BOT);
             assistantMsg.setMessage("The UAE corporate tax rate is 9% for taxable income above AED 375,000.");
 
-            // Context chunk 1
             ChatMessageContext ctx1 = new ChatMessageContext();
             ctx1.setSource(ChunkSource.DB);
             ctx1.setDocumentId("uae-tax-law-2023");
@@ -59,7 +59,6 @@ public class SeedDataConfig {
             ctx1.setText("The standard Corporate Tax rate is 9% for taxable income exceeding AED 375,000...");
             ctx1.setUrl("https://mof.gov.ae/corporate-tax");
 
-            // Context chunk 2
             ChatMessageContext ctx2 = new ChatMessageContext();
             ctx2.setSource(ChunkSource.SEARCH_INDEX);
             ctx2.setDocumentId("blog-uae-tax-guide");
@@ -68,18 +67,17 @@ public class SeedDataConfig {
             ctx2.setText("UAE introduced a 9% corporate tax rate starting June 2023...");
             ctx2.setUrl("https://example.com/uae-tax-guide");
 
-            // Attach context chunks to assistant message
             assistantMsg.addContextChunk(ctx1);
             assistantMsg.addContextChunk(ctx2);
 
-            ChatMessage savedAssistantMsg = messageRepo.save(assistantMsg);
+            assistantMsg = messageRepo.save(assistantMsg);
+            log.info("✅ DataInitializer: created assistant msg {}", assistantMsg.getId());
 
-            // Update session's updatedAt
-            savedSession.setUpdatedAt(savedAssistantMsg.getCreatedAt());
-            sessionRepo.save(savedSession);
-
-            System.out.println("✅ Demo RAG data seeded into database");
-        };
+            log.info("🎉 DataInitializer: seeding completed successfully");
+        } catch (Exception e) {
+            log.error("❌ DataInitializer: error while seeding DB", e);
+            // let the app still start, it's a demo
+        }
     }
 }
 

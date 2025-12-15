@@ -3,6 +3,8 @@ version: "3.9"
 services:
   db:
     image: postgres:16
+    container_name: ragchat-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ragchat
       POSTGRES_USER: ragchat
@@ -17,10 +19,13 @@ services:
     container_name: ragchat-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin123
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
     depends_on:
       - db
 
@@ -28,15 +33,11 @@ services:
     build: .
     container_name: ragchat-app
     restart: unless-stopped
-    env_file:
-      - .env.example
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-    ports:
-      - "8080:8080"
+      SPRING_PROFILES_ACTIVE: default
     depends_on:
       - db
 
 volumes:
   ragchat-db-data:
+  pgadmin_data:
